@@ -1,0 +1,18 @@
+{
+  "Auth": {
+    "LoginTitle": "Welcome back",
+    "LoginDescription": "Log in with your Facebook or Google account",
+    "LoginWithGoogle": "Sign in with Google",
+    "LoginWithFacebook": "Sign in with Facebook",
+    "OrContinueWith": "Or continue with",
+    "ForgotPassword": "Forgot password",
+    "LoginButton": "Login",
+    "RegisterButton": "Register",
+    "NoAccount": "Don't have an account?",
+    "AgreeTerms": "By clicking continue, you agree to our Terms of Service and Privacy Policy."
+  },
+  "Form": {
+    "Email" : "Email",
+    "Password" : "Password"
+  }
+}

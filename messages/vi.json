@@ -1,0 +1,18 @@
+{
+  "Auth": {
+    "LoginTitle": "Chào mừng bạn quay lại",
+    "LoginDescription": "Đăng nhập bằng tài khoản Facebook hoặc Google của bạn",
+    "LoginWithGoogle": "Đăng nhập bằng Google",
+    "LoginWithFacebook": "Đăng nhập bằng Facebook",
+    "OrContinueWith": "Hoặc tiếp tục với",
+    "ForgotPassword": "Quên mật khẩu",
+    "LoginButton": "Đăng nhập",
+    "RegisterButton": "Đăng ký",
+    "NoAccount": "Không có tài khoản?",
+    "AgreeTerms": "Bằng cách nhấp vào tiếp tục, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi."
+  },
+  "Form": {
+    "Email" : "Email",
+    "Password" : "Password"
+  }
+}
