@@ -6,6 +6,8 @@
     "LoginWithFacebook": "Đăng nhập bằng Facebook",
     "OrContinueWith": "Hoặc tiếp tục với",
     "ForgotPassword": "Quên mật khẩu",
+    "ForgotPasswordButton": "Gửi liên kết đặt lại",
+    "ForgotPasswordDescription": "Nhập địa chỉ email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu.",
     "LoginButton": "Đăng nhập",
     "RegisterButton": "Đăng ký",
     "NoAccount": "Không có tài khoản?",
@@ -14,5 +16,12 @@
   "Form": {
     "Email" : "Email",
     "Password" : "Password"
-  }
+  },
+  "Schema": {
+    "EmailRequired": "Email là bắt buộc",
+    "EmailInvalid": "Email không hợp lệ",
+    "PasswordRequired": "Mật khẩu là bắt buộc",
+    "PasswordMin8Length": "Mật khẩu phải có ít nhất 8 ký tự",
+    "PasswordMax100Length": "Mật khẩu không được vượt quá 100 ký tự"
+  } 
 }

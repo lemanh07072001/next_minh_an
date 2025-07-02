@@ -4,6 +4,8 @@ import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale} from 'next-intl/server';
 
+
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -29,6 +31,7 @@ export default async function  RootLayout({
     <html lang={locale}>
       <body
       >
+          {children}
         {children}
       </body>
     </html>

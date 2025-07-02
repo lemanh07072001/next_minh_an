@@ -6,13 +6,22 @@
     "LoginWithFacebook": "Sign in with Facebook",
     "OrContinueWith": "Or continue with",
     "ForgotPassword": "Forgot password",
+    "ForgotPasswordButton": "Send reset link",
+    "ForgotPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
     "LoginButton": "Login",
     "RegisterButton": "Register",
     "NoAccount": "Don't have an account?",
     "AgreeTerms": "By clicking continue, you agree to our Terms of Service and Privacy Policy."
   },
   "Form": {
-    "Email" : "Email",
-    "Password" : "Password"
+    "Email": "Email",
+    "Password": "Password"
+  },
+  "Schema": {
+    "EmailRequired": "Email is required",
+    "EmailInvalid": "Invalid email address",
+    "PasswordRequired": "Password is required",
+    "PasswordMin8Length": "Password must be at least 8 characters",
+    "PasswordMax100Length": "Password must not exceed 100 characters"
   }
 }
