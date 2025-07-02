@@ -1,6 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { toast } from "sonner"
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,24 +42,48 @@ export function LoginForm({
   const tAuth = useTranslations("Auth");
   const tForm = useTranslations("Form");
 
+  const router = useRouter();
+
   const [modalForgotPassword, setModalForgotPassword] = useState(false);
+  const [isLoading, setLoading] = useState(true);
 
   const formSchema = createFormSchema();
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "lemanh@gmail.com",
+      email: "clonegolike100@gmail.com",
       password: "password",
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    const res = await signIn("credentials", {
-      redirect: false,
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      setLoading(true)
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (res?.error) {
+        toast.error('Thất bại',{
+          description: "Tài khoản hoặc mật khẩu không chính xác."
+        })
+      } else {
+        toast.success('Thành công!',{
+          description: "Đng nhập thành công."
+        })
+        router.push("/");
+      }
+    }catch (error) {
+      console.log(error);
+      toast.error('Thất bại',{
+        description: "Lỗi hệ thống vui lòng thử lại sau."
+      })
+    }finally {
+      setLoading(false);
+    }
   };
 
   const handelOpenModalForgotPassword = (open: boolean) => {
@@ -165,8 +192,18 @@ export function LoginForm({
                         />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full">
-                      {tAuth("LoginButton")}
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ?
+                          <Image
+                              className="dark:invert"
+                              src="/icons/loadingIcon.svg"
+                              alt="Next.js logo"
+                              width={30}
+                              height={30}
+                              priority
+                          />
+                          :
+                          tAuth("LoginButton")}
                     </Button>
                   </div>
                   <div className="text-center text-sm">

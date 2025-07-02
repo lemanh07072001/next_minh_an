@@ -11,24 +11,23 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+
         // Gọi Laravel API để xác thực
         const res = await api.post("/auth/login", {
           email: credentials?.email,
           password: credentials?.password,
         });
 
-        const data = res;
-        
-        console.log(data);
-        
+        if (res.status !== 200) return null
 
-        // // Nếu muốn lưu token Laravel để sau này gọi API:
-        // return {
-        //   id: data.user.id,
-        //   name: data.user.name,
-        //   email: data.user.email,
-        //   token: data.access_token
-        // }
+        const data =  res.data
+
+        return {
+          id: data.user.id,
+          name: data.user.name,
+          email: data.user.email,
+          token: data.access_token
+        }
       },
     }),
   ],
@@ -36,20 +35,20 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       // Khi login thành công, user sẽ có dữ liệu
       if (user) {
-        token.accessToken = user.token;
+        token.accessToken = user.token
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       // Truyền token Laravel về client
-      session.accessToken = token.accessToken;
-      return session;
-    },
+      session.accessToken = token.accessToken
+      return session
+    }
   },
   pages: {
-    signIn: "/login",
+    signIn: "/login"
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET
 });
 
 export { handler as GET, handler as POST };
