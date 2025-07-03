@@ -3,7 +3,7 @@ import {notFound} from 'next/navigation';
 import {routing} from '@/i18n/routing';
 import { Toaster } from "@/components/ui/sonner"
 
-export default async function LocaleLayout({
+export default async function AdminLayout({
                                                children,
                                                params
                                            }: {

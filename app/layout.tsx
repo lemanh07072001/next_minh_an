@@ -32,7 +32,6 @@ export default async function  RootLayout({
       <body
       >
           {children}
-        {children}
       </body>
     </html>
   );

@@ -2,7 +2,9 @@
 
 import { cn } from "@/lib/utils";
 import Image from "next/image";
-import { toast } from "sonner"
+import { Loader } from 'lucide-react';
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -45,7 +47,7 @@ export function LoginForm({
   const router = useRouter();
 
   const [modalForgotPassword, setModalForgotPassword] = useState(false);
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
 
   const formSchema = createFormSchema();
 
@@ -59,7 +61,7 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const res = await signIn("credentials", {
         redirect: false,
         email: data.email,
@@ -67,21 +69,23 @@ export function LoginForm({
       });
 
       if (res?.error) {
-        toast.error('Thất bại',{
-          description: "Tài khoản hoặc mật khẩu không chính xác."
-        })
+        toast.error("Thất bại", {
+          description: "Tài khoản hoặc mật khẩu không chính xác.",
+        });
       } else {
-        toast.success('Thành công!',{
-          description: "Đng nhập thành công."
-        })
-        router.push("/");
+        toast.success("Thành công!", {
+          description: "Đng nhập thành công.",
+        });
+        setTimeout(()=>{
+          router.push("/admin/dashboard");
+        },1000)
       }
-    }catch (error) {
+    } catch (error) {
       console.log(error);
-      toast.error('Thất bại',{
-        description: "Lỗi hệ thống vui lòng thử lại sau."
-      })
-    }finally {
+      toast.error("Thất bại", {
+        description: "Lỗi hệ thống vui lòng thử lại sau.",
+      });
+    } finally {
       setLoading(false);
     }
   };
@@ -192,18 +196,35 @@ export function LoginForm({
                         />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                      {isLoading ?
-                          <Image
-                              className="dark:invert"
-                              src="/icons/loadingIcon.svg"
-                              alt="Next.js logo"
-                              width={30}
-                              height={30}
-                              priority
-                          />
-                          :
-                          tAuth("LoginButton")}
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <AnimatePresence mode="wait" initial={false}>
+                        {isLoading ? (
+                          <motion.div
+                            key="loading"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.8 }}
+                            transition={{ duration: 0.2 }}
+                            className="flex items-center justify-center"
+                          >
+                            <Loader className="animate-spin"/>
+                          </motion.div>
+                        ) : (
+                          <motion.span
+                            key="label"
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            {tAuth("LoginButton")}
+                          </motion.span>
+                        )}
+                      </AnimatePresence>
                     </Button>
                   </div>
                   <div className="text-center text-sm">
