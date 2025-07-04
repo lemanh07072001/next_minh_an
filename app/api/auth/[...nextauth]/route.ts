@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { api } from "@/lib/axios";
+import axios from "axios";
 
 const handler = NextAuth({
   providers: [
@@ -13,10 +13,18 @@ const handler = NextAuth({
       async authorize(credentials) {
 
         // Gọi Laravel API để xác thực
-        const res = await api.post("/auth/login", {
-          email: credentials?.email,
-          password: credentials?.password,
-        });
+        const res = await axios.post(
+          `${process.env.URL_API_BACKEND}/auth/login`,
+          {
+            email: credentials?.email,
+            password: credentials?.password,
+          },
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
 
         if (res.status !== 200) return null
 
