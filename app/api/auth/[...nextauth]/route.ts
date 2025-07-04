@@ -14,7 +14,7 @@ const handler = NextAuth({
 
         // Gọi Laravel API để xác thực
         const res = await axios.post(
-          `${process.env.URL_API_BACKEND}/auth/login`,
+          `https://api.minhan.online/api/auth/login`,
           {
             email: credentials?.email,
             password: credentials?.password,
@@ -30,11 +30,13 @@ const handler = NextAuth({
 
         const data =  res.data
 
+        console.log(data)
         return {
           id: data.user.id,
           name: data.user.name,
           email: data.user.email,
-          token: data.access_token
+          token: data.token,
+          expiresIn: data.expires_in,
         }
       },
     }),
@@ -43,7 +45,26 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       // Khi login thành công, user sẽ có dữ liệu
       if (user) {
-        token.accessToken = user.token
+        token.accessToken = user.token;
+        token.expiresAt = Math.floor(Date.now() / 1000) + user.expiresIn;
+      }
+
+      // Nếu token hết hạn
+      // @ts-ignore
+      if (Date.now() >= token.expiresAt * 1000) {
+        try {
+          const res = await axios.post(`https://api.minhan.online/api/auth/refresh`, null, {
+            headers: {
+              Authorization: `Bearer ${token.accessToken}`,
+            },
+          });
+
+          token.accessToken = res.data.token;
+          token.expiresAt = Math.floor(Date.now() / 1000) + res.data.expires_in;
+        } catch (err) {
+          console.error("Refresh token failed:", err);
+          throw err;
+        }
       }
       return token
     },

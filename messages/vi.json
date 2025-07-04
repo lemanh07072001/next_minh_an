@@ -1,9 +1,13 @@
 {
   "Auth": {
     "LoginTitle": "Chào mừng bạn quay lại",
+    "RegisterTitle": "Chào mừng bạn tham gia!",
     "LoginDescription": "Đăng nhập bằng tài khoản Facebook hoặc Google của bạn",
+    "RegisterDescription": "Đăng ký bằng tài khoản Facebook hoặc Google của bạn",
     "LoginWithGoogle": "Đăng nhập bằng Google",
     "LoginWithFacebook": "Đăng nhập bằng Facebook",
+    "RegisterWithGoogle": "Đăng ký bằng Google",
+    "RegisterWithFacebook": "Đăng ký bằng Facebook",
     "OrContinueWith": "Hoặc tiếp tục với",
     "ForgotPassword": "Quên mật khẩu",
     "ForgotPasswordButton": "Gửi liên kết đặt lại",
@@ -12,16 +16,23 @@
     "RegisterButton": "Đăng ký",
     "NoAccount": "Không có tài khoản?",
     "AgreeTerms": "Bằng cách nhấp vào tiếp tục, bạn đồng ý với Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi."
+
   },
   "Form": {
     "Email" : "Email",
-    "Password" : "Password"
+    "Password" : "Password",
+    "Name" : "Họ và tên",
+    "PasswordConfirmation" : "Nhập lại password"
   },
   "Schema": {
     "EmailRequired": "Email là bắt buộc",
     "EmailInvalid": "Email không hợp lệ",
     "PasswordRequired": "Mật khẩu là bắt buộc",
     "PasswordMin8Length": "Mật khẩu phải có ít nhất 8 ký tự",
-    "PasswordMax100Length": "Mật khẩu không được vượt quá 100 ký tự"
+    "PasswordMax100Length": "Mật khẩu không được vượt quá 100 ký tự",
+    "NameRequired": "Vui lòng nhập tên",
+    "NameMax100Length": "Tên không được vượt quá 100 ký tự",
+    "PasswordConfirmationRequired": "Vui lòng xác nhận mật khẩu",
+    "PasswordNotMatch": "Mật khẩu xác nhận không khớp"
   } 
 }

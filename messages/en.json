@@ -1,9 +1,13 @@
 {
   "Auth": {
     "LoginTitle": "Welcome back",
+    "RegisterTitle": "Welcome Register",
     "LoginDescription": "Log in with your Facebook or Google account",
+    "RegisterDescription": "Sign in with your Facebook or Google account",
     "LoginWithGoogle": "Sign in with Google",
     "LoginWithFacebook": "Sign in with Facebook",
+    "RegisterWithGoogle": "Sign up with Google",
+    "RegisterWithFacebook": "Sign up with Facebook",
     "OrContinueWith": "Or continue with",
     "ForgotPassword": "Forgot password",
     "ForgotPasswordButton": "Send reset link",
@@ -15,13 +19,19 @@
   },
   "Form": {
     "Email": "Email",
-    "Password": "Password"
+    "Password": "Password",
+    "Name" : "Name",
+    "PasswordConfirmation" : "Password Confirmation"
   },
   "Schema": {
     "EmailRequired": "Email is required",
     "EmailInvalid": "Invalid email address",
     "PasswordRequired": "Password is required",
     "PasswordMin8Length": "Password must be at least 8 characters",
-    "PasswordMax100Length": "Password must not exceed 100 characters"
+    "PasswordMax100Length": "Password must not exceed 100 characters",
+    "NameRequired": "Please enter your name",
+    "NameMax100Length": "Name cannot exceed 100 characters",
+    "PasswordConfirmationRequired": "Please confirm your password",
+    "PasswordNotMatch": "Passwords do not match"
   }
 }

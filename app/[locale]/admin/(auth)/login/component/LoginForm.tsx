@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -45,6 +46,7 @@ export function LoginForm({
 
   const [modalForgotPassword, setModalForgotPassword] = useState(false);
   const [isLoading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const formSchema = createFormSchema();
 
@@ -161,36 +163,50 @@ export function LoginForm({
                     <div className="grid ">
                       <div className="flex items-center w-full">
                         <FormField
-                          control={form.control}
-                          name="password"
-                          render={({ field }) => (
-                            <FormItem className="w-full">
-                              <div className="flex items-center justify-between">
-                                <FormLabel htmlFor="password">
-                                  {tForm("Password")}
-                                </FormLabel>
-                                <Button
-                                  type="button"
-                                  variant="link"
-                                  onClick={handelOpenModalForgotPassword}
-                                  className="ml-auto text-sm underline-offset-4 hover:underline"
-                                >
-                                  {tAuth("ForgotPassword")}
-                                </Button>
-                              </div>
-                              <FormControl>
-                                <Input
-                                  id="password"
-                                  type="password"
-                                  placeholder="********"
-                                  className="w-full"
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem className="w-full">
+                                  <>
+                                    <div className="flex items-center justify-between">
+                                      <FormLabel htmlFor="password">{tForm("Password")}</FormLabel>
+                                      <Button
+                                          type="button"
+                                          variant="link"
+                                          onClick={handelOpenModalForgotPassword}
+                                          className="ml-auto text-sm underline-offset-4 hover:underline"
+                                      >
+                                        {tAuth("ForgotPassword")}
+                                      </Button>
+                                    </div>
+                                    <div className="relative">
+                                      <FormControl>
+                                        <Input
+                                            id="password"
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="********"
+                                            className="w-full pr-10"
+                                            {...field}
+                                        />
+                                      </FormControl>
+                                      <button
+                                          type="button"
+                                          onClick={() => setShowPassword((prev) => !prev)}
+                                          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                                      >
+                                        {showPassword ? (
+                                            <EyeOff className="h-5 w-5" />
+                                        ) : (
+                                            <Eye className="h-5 w-5" />
+                                        )}
+                                      </button>
+                                    </div>
+                                    <FormMessage />
+                                  </>
+                                </FormItem>
+                            )}
                         />
+
                       </div>
                     </div>
                     <Button
