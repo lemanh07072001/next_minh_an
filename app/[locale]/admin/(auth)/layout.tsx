@@ -1,17 +1,18 @@
-import {NextIntlClientProvider, hasLocale} from 'next-intl';
-import {notFound} from 'next/navigation';
-import {routing} from '@/i18n/routing';
-import { Toaster } from "@/components/ui/sonner"
+import { NextIntlClientProvider, hasLocale } from "next-intl";
+import { notFound } from "next/navigation";
+import { routing } from "@/i18n/routing";
+import { Toaster } from "@/components/ui/sonner";
 
-export default async function LocaleLayout({
-                                               children,
-                                               params
-                                           }: {
+
+export default async function AdminLayout({
+                                              children,
+                                              params,
+                                          }: {
     children: React.ReactNode;
-    params: Promise<{locale: string}>;
+    params: Promise<{ locale: string }>;
 }) {
     // Ensure that the incoming `locale` is valid
-    const {locale} = await params;
+    const { locale } = await params;
     if (!hasLocale(routing.locales, locale)) {
         notFound();
     }
@@ -19,11 +20,11 @@ export default async function LocaleLayout({
     return (
         <html lang={locale}>
             <body>
-                <NextIntlClientProvider>
-                    {children}
-                     <Toaster richColors/>
-                </NextIntlClientProvider>
-               
+            <NextIntlClientProvider>
+                {children}
+                <Toaster richColors />
+            </NextIntlClientProvider>
+
             </body>
         </html>
     );

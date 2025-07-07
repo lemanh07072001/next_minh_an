@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Loader } from 'lucide-react';
+import {Loader} from 'lucide-react';
+import Link from 'next/link'
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -298,19 +299,16 @@ export function RegisterForm({
                                     </div>
                                     <div className="text-center text-sm">
                                         {tAuth("NoAccount")}
-                                        <a href="#" className="underline underline-offset-4">
-                                            {tAuth("RegisterButton")}
-                                        </a>
+                                        <Button asChild variant="link">
+                                            <Link href="/admin/login" className="underline underline-offset-4">{tAuth("LoginButton")}</Link>
+                                        </Button>
                                     </div>
                                 </div>
                             </form>
                         </Form>
                     </CardContent>
                 </Card>
-                <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-                    By clicking continue, you agree to our{" "}
-                    <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
-                </div>
+
             </div>
         </>
     );
