@@ -18,14 +18,9 @@ export default async function AdminLayout({
     }
 
     return (
-        <html lang={locale}>
-            <body>
-            <NextIntlClientProvider>
-                {children}
-                <Toaster richColors />
-            </NextIntlClientProvider>
-
-            </body>
-        </html>
+        <NextIntlClientProvider>
+            {children}
+            <Toaster richColors />
+        </NextIntlClientProvider>
     );
 }

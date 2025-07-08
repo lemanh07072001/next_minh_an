@@ -10,7 +10,7 @@ export default async (req, res) => {
     })
   } else {
     res.send({
-      error: "You must be signed in to view the protected content on this page.",
+      error: "You must be signed in to views the protected content on this page.",
     })
   }
 }

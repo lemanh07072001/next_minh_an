@@ -1,11 +1,11 @@
-import {BookOpen, Bot, Frame, Map, PieChart, Settings2, Users} from "lucide-react";
+import {BookOpen, Bot, Settings2, Users} from "lucide-react";
 
 export const MenuDashboard =[
         {
             title: "Account",
             url: "#",
             icon: Users,
-            isActive: true,
+
             items: [
                 {
                     title: "Users",

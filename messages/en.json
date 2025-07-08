@@ -37,5 +37,16 @@
   "Menu" : {
     "Account" : "Account",
     "Users" : "Users"
+  },
+  "Button": {
+    "AddUser": "Add User"
+  },
+  "User": {
+    "UserManagement": "User Management",
+    "ManageAndOrganizeTeam": "Manage and organize team members"
+  },
+  "Locale": {
+    "SearchUser": "Search User",
+    "Status": "Status"
   }
 }

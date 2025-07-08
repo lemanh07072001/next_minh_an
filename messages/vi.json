@@ -38,5 +38,16 @@
   "Menu" : {
     "Account" : "Tài khoản",
     "Users" : "Danh sách tài khoản"
+  },
+  "Button" : {
+    "AddUser": "Thêm người dùng"
+  },
+  "User" : {
+    "UserManagement": "Quản lý người dùng",
+    "ManageAndOrganizeTeam": "Quản lý và tổ chức các thành viên trong nhóm"
+  },
+  "Locale" : {
+    "SearchUser": "Tìm kiếm người dùng",
+    "Status": "Trạng thái"
   }
 }

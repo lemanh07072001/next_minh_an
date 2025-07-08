@@ -2,7 +2,7 @@ import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import SessionWrapper from "./components/sessionWrapper";
-import InitialPageLoader from "./components/initial-page-loader";
+import InitialPageLoader from "./components/InitialPageLoader";
 
 
 export default async function MainLayout({
@@ -19,15 +19,11 @@ export default async function MainLayout({
   }
 
   return (
-      <html lang={locale}>
-      <body>
       <NextIntlClientProvider>
-        <SessionWrapper>
-          <InitialPageLoader/>
-          {children}
-        </SessionWrapper>
+          <SessionWrapper>
+              <InitialPageLoader/>
+              {children}
+          </SessionWrapper>
       </NextIntlClientProvider>
-      </body>
-      </html>
   );
 }

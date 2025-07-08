@@ -1,27 +1,23 @@
-"use client"
+import {cookies} from "next/headers";
 
-import {useEffect} from "react";
+export const metadata = {
+    title: "Dashboard | MyWebsite",
+};
+
 import {createApiInstance} from "@/lib/axios";
+import DashboardPage from "@/app/views/dashboards/DashboardPage";
 
 
-export default function DashboardPage() {
+export default async function Dashboards() {
+    const cookieStore = await cookies(); // lấy cookies ở server
+    const token = cookieStore.get("token")?.value;
 
-    useEffect(() => {
-        async function fetchUser() {
-            try {
-                const api = createApiInstance();
-                const res = await api.get("/user/get-users");
-            } catch (err: any) {
-                console.error("Error fetching user", err);
+    console.log(cookieStore)
+    const api = createApiInstance(token); // truyền token vào axios
 
-            } finally {
-
-            }
-        }
-
-        fetchUser();
-    }, []);
+    const res = await api.get("/user/get-users");
+    const users = res.data;
     return (
-        <h1>Dashboard</h1>
+        <DashboardPage users={users}/>
     )
 }

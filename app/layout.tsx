@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale} from 'next-intl/server';
+import { ThemeProvider } from "@/components/ThemeProvider"
 
 
 
@@ -28,10 +29,17 @@ export default async function  RootLayout({
 }>) {
     const locale = await getLocale();
   return (
-    <html lang={locale}>
-      <body
+    <html lang={locale} suppressHydrationWarning>
+      <body>
+      <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
       >
           {children}
+      </ThemeProvider>
+
       </body>
     </html>
   );

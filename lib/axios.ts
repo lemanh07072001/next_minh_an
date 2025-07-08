@@ -12,12 +12,14 @@ function getLocaleFromCookie(): string {
 
 let isLoggingOut = false;
 
-export function createApiInstance() {
+export function createApiInstance(token?: string) {
   const instance = axios.create({
     baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND_LOCAL,
-    headers: {
-      Accept: "application/json",
-    },
+    headers: token
+        ? {
+          Authorization: `Bearer ${token}`,
+        }
+        : {},
   });
 
   instance.interceptors.request.use(async (config) => {
