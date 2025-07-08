@@ -34,5 +34,9 @@
     "NameMax100Length": "Tên không được vượt quá 100 ký tự",
     "PasswordConfirmationRequired": "Vui lòng xác nhận mật khẩu",
     "PasswordNotMatch": "Mật khẩu xác nhận không khớp"
-  } 
+  },
+  "Menu" : {
+    "Account" : "Tài khoản",
+    "Users" : "Danh sách tài khoản"
+  }
 }

@@ -10,9 +10,7 @@ export default function DashboardPage() {
         async function fetchUser() {
             try {
                 const api = createApiInstance();
-
                 const res = await api.get("/user/get-users");
-                console.log(res)
             } catch (err: any) {
                 console.error("Error fetching user", err);
 

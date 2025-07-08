@@ -1,9 +1,20 @@
 import axios from "axios";
 import { getSession, signOut } from "next-auth/react";
 
+// Hàm đọc cookie client-side
+function getLocaleFromCookie(): string {
+  if (typeof document !== "undefined") {
+    const match = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]*)/);
+    return match ? decodeURIComponent(match[1]) : "vi"; // fallback "vi"
+  }
+  return "vi";
+}
+
+let isLoggingOut = false;
+
 export function createApiInstance() {
   const instance = axios.create({
-    baseURL: 'https://api.minhan.online/api',
+    baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND_LOCAL,
     headers: {
       Accept: "application/json",
     },
@@ -11,27 +22,36 @@ export function createApiInstance() {
 
   instance.interceptors.request.use(async (config) => {
     const session = await getSession();
+    const locale = getLocaleFromCookie();
 
     if (session?.accessToken) {
       config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
+
+    config.headers["X-Locale"] = locale;
+
     return config;
   });
 
   instance.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
 
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
+      if (
+        error.response?.status === 401 &&
+        !originalRequest._retry &&
+        !isLoggingOut
+      ) {
+        originalRequest._retry = true;
+        isLoggingOut = true;
 
-          await signOut(); // Hoặc tự động refresh token ở đây
-          return Promise.reject(error);
-        }
-
+        await signOut();
         return Promise.reject(error);
       }
+
+      return Promise.reject(error);
+    }
   );
 
   return instance;

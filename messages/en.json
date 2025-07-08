@@ -33,5 +33,9 @@
     "NameMax100Length": "Name cannot exceed 100 characters",
     "PasswordConfirmationRequired": "Please confirm your password",
     "PasswordNotMatch": "Passwords do not match"
+  },
+  "Menu" : {
+    "Account" : "Account",
+    "Users" : "Users"
   }
 }

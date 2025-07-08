@@ -67,7 +67,7 @@ export function LoginForm({
         email: data.email,
         password: data.password,
       });
-
+        
       if (res?.error) {
         toast.error("Thất bại", {
           description: "Tài khoản hoặc mật khẩu không chính xác.",
@@ -81,7 +81,7 @@ export function LoginForm({
         },1000)
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Thất bại", {
         description: "Lỗi hệ thống vui lòng thử lại sau.",
       });

@@ -11,10 +11,10 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-
+      
         // Gọi Laravel API để xác thực
         const res = await axios.post(
-          `https://api.minhan.online/api/auth/login`,
+          `${process.env.NEXT_PUBLIC_URL_API_BACKEND_LOCAL}/auth/login`,
           {
             email: credentials?.email,
             password: credentials?.password,
@@ -29,8 +29,6 @@ const handler = NextAuth({
         if (res.status !== 200) return null
 
         const data =  res.data
-
-        console.log(data)
         return {
           id: data.user.id,
           name: data.user.name,
@@ -53,7 +51,7 @@ const handler = NextAuth({
       // @ts-ignore
       if (Date.now() >= token.expiresAt * 1000) {
         try {
-          const res = await axios.post(`https://api.minhan.online/api/auth/refresh`, null, {
+          const res = await axios.post(`${process.env.NEXT_PUBLIC_URL_API_BACKEND_LOCAL}/auth/refresh`, null, {
             headers: {
               Authorization: `Bearer ${token.accessToken}`,
             },

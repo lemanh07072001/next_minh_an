@@ -1,15 +1,15 @@
-import {BookOpen, Bot, Frame, Map, PieChart, Settings2, SquareTerminal} from "lucide-react";
+import {BookOpen, Bot, Frame, Map, PieChart, Settings2, Users} from "lucide-react";
 
 export const MenuDashboard =[
         {
-            title: "Playground",
+            title: "Account",
             url: "#",
-            icon: SquareTerminal,
+            icon: Users,
             isActive: true,
             items: [
                 {
-                    title: "History",
-                    url: "#",
+                    title: "Users",
+                    url: "/admin/users",
                 },
                 {
                     title: "Starred",
@@ -41,7 +41,7 @@ export const MenuDashboard =[
             ],
         },
         {
-            title: "Documentation",
+            title: "",
             url: "#",
             icon: BookOpen,
             items: [
