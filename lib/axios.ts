@@ -1,11 +1,11 @@
 import axios from "axios";
 import { getSession, signOut } from "next-auth/react";
 
-// Hàm đọc cookie client-side
+// Đọc locale từ cookie client
 function getLocaleFromCookie(): string {
   if (typeof document !== "undefined") {
     const match = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : "vi"; // fallback "vi"
+    return match ? decodeURIComponent(match[1]) : "vi";
   }
   return "vi";
 }
@@ -14,14 +14,11 @@ let isLoggingOut = false;
 
 export function createApiInstance(token?: string) {
   const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND_LOCAL,
-    headers: token
-        ? {
-          Authorization: `Bearer ${token}`,
-        }
-        : {},
+    baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 
+  // ✅ Thêm token và locale vào mỗi request
   instance.interceptors.request.use(async (config) => {
     const session = await getSession();
     const locale = getLocaleFromCookie();
@@ -35,6 +32,7 @@ export function createApiInstance(token?: string) {
     return config;
   });
 
+  // ✅ Nếu token sai → gọi logout Laravel + signOut
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -46,9 +44,29 @@ export function createApiInstance(token?: string) {
         !isLoggingOut
       ) {
         originalRequest._retry = true;
-        isLoggingOut = true;
 
-        await signOut();
+        try {
+          const session = await getSession();
+          const token = session?.accessToken;
+
+          if (token) {
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/auth/logout`,
+              null,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  Accept: "application/json",
+                },
+              }
+            );
+          }
+        } catch (logoutError) {
+          console.warn("⚠️ Logout Laravel failed:", logoutError);
+        }
+
+        isLoggingOut = true;
+        await signOut({ redirect: false });
         return Promise.reject(error);
       }
 

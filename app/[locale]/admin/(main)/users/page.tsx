@@ -3,10 +3,51 @@ export const metadata = {
 };
 
 import UserPage from "@/app/views/users/UserPage";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
+async function fetchUserData(token?: string) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/user/get-users`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        // Next.js bắt buộc với server-side fetch nếu có token:
+        cache: "no-store",
+      }
+    );
 
-export default function Users() {
-    return (
-        <UserPage/>
-    )
+    if (!response.ok) {
+      throw new Error(`Error fetching users: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+}
+
+export default async function Users() {
+  const session = await getServerSession(authOptions);
+  const token = session?.accessToken;
+
+  if (!token) {
+    redirect("/403"); // Hoặc `/en/403` nếu dùng đa ngôn ngữ
+  }
+
+  const userData = await fetchUserData(token);
+
+  // (Tùy bạn) Nếu API không trả về user:
+  if (!userData) {
+    redirect("/403"); // Hoặc hiển thị thông báo lỗi tùy ý
+  }
+
+  return <UserPage />;
 }

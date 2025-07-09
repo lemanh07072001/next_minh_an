@@ -66,13 +66,16 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: session, status } = useSession();
-   const datas = {
+
+  
+  const datas = {
     user: {
       name: session?.user?.name || "Chưa có tên",
       email: session?.user?.email || "Chưa có email",
       avatar: session?.user?.image || "",
     },
   };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

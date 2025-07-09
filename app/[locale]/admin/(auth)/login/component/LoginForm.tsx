@@ -36,6 +36,7 @@ import {
 } from "@/app/[locale]/admin/(auth)/login/validator/loginSchema";
 import { signIn } from "next-auth/react";
 
+
 export function LoginForm({
   className,
   ...props
@@ -60,6 +61,7 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: LoginFormData) => {
+
     try {
       setLoading(true);
       const res = await signIn("credentials", {
@@ -74,7 +76,7 @@ export function LoginForm({
         });
       } else {
         toast.success("Thành công!", {
-          description: "Đng nhập thành công.",
+          description: "Đăng nhập thành công.",
         });
         setTimeout(()=>{
           router.push("/admin/dashboard");
