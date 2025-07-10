@@ -34,7 +34,34 @@ async function fetchUserData(token?: string) {
   }
 }
 
-export default async function Users() {
+async function fetchStatusUserData(token?: string,locale: string = 'vi') {
+    try {
+        const response = await fetch(
+            `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/status/user`,
+            {
+                method: "GET",
+                headers: {
+                    Accept: "application/json",
+                    "X-Locale": locale,
+                    ...(token && { Authorization: `Bearer ${token}` }),
+                },
+                cache: "no-store",
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Error fetching users: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data;
+    }catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
+    }
+}
+
+export default async function Users({ params }: { params: { locale: string } }) {
   const session = await getServerSession(authOptions);
   const token = session?.accessToken;
 
@@ -43,11 +70,12 @@ export default async function Users() {
   }
 
   const userData = await fetchUserData(token);
+    const statusData = await fetchStatusUserData(token,params.locale);
 
   // (Tùy bạn) Nếu API không trả về user:
   if (!userData) {
     redirect("/403"); // Hoặc hiển thị thông báo lỗi tùy ý
   }
 
-  return <UserPage />;
+  return <UserPage statusData={statusData}/>;
 }

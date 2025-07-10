@@ -1,8 +1,8 @@
 "use client";
 
 
-import { Button } from "@/components/ui/button";
-import { Plus, Search, Mail, Lock, Trash2 } from "lucide-react";
+import {Button} from "@/components/ui/button";
+import {Plus, Search, Mail, Lock, Trash2} from "lucide-react";
 import {
     Select,
     SelectContent,
@@ -10,25 +10,29 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { createApiInstance } from "@/lib/axios";
-import { log } from "console";
+import {Input} from "@/components/ui/input";
+import {useEffect, useState} from "react";
+import {createApiInstance} from "@/lib/axios";
+
 import {Card, CardContent} from "@/components/ui/card";
 import {useTranslations} from "next-intl";
 
-export default function UserPage(){
+interface UserPageProps {
+    statusData?: any
+}
+
+export default function UserPage({statusData}: UserPageProps) {
     const [status, setStatus] = useState([]);
 
     const tUser = useTranslations("User");
     const tButton = useTranslations("Button");
     const tLocale = useTranslations("Locale");
 
+    console.log(statusData)
     useEffect(() => {
         const getStatus = async () => {
             const api = createApiInstance();
             const res = await api.get("/status/user");
-
             setStatus(res.data);
         };
 
@@ -44,7 +48,7 @@ export default function UserPage(){
                     </p>
                 </div>
                 <Button variant="outline" className="flex items-center gap-2">
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-4 h-4"/>
                     {tButton('AddUser')}
                 </Button>
             </div>
@@ -55,16 +59,17 @@ export default function UserPage(){
                     <div className="flex flex-col sm:flex-row gap-4">
                         <div className="flex-1">
                             <div className="relative">
-                                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                                <Input placeholder={`${tLocale('SearchUser')} ...`} className="pl-10" />
+                                <Search
+                                    className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"/>
+                                <Input placeholder={`${tLocale('SearchUser')} ...`} className="pl-10"/>
                             </div>
                         </div>
                         <Select>
                             <SelectTrigger className="w-full sm:w-40">
-                                <SelectValue placeholder={`${tLocale('Status')}`} />
+                                <SelectValue placeholder={`${tLocale('Status')}`}/>
                             </SelectTrigger>
                             <SelectContent>
-                                {Object.entries(status).map(([key, label]) => (
+                                {Object.entries(statusData).map(([key, label]) => (
                                     <SelectItem key={key} value={key}>
                                         {label}
                                     </SelectItem>
@@ -102,7 +107,7 @@ export default function UserPage(){
 
                                 className="flex items-center gap-2 bg-transparent"
                             >
-                                <Mail className="w-4 h-4" />
+                                <Mail className="w-4 h-4"/>
                                 Gửi Email
                             </Button>
                             <Button
@@ -110,7 +115,7 @@ export default function UserPage(){
                                 size="sm"
                                 className="flex items-center gap-2 bg-transparent"
                             >
-                                <Lock className="w-4 h-4" />
+                                <Lock className="w-4 h-4"/>
                                 Khóa Tài Khoản
                             </Button>
                             <Button
@@ -118,7 +123,7 @@ export default function UserPage(){
                                 size="sm"
                                 className="flex items-center gap-2"
                             >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-4 h-4"/>
                                 Xóa Tất Cả
                             </Button>
                         </div>
