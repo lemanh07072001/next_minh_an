@@ -47,33 +47,36 @@ export const authOptions = {
 
   callbacks: {
     async jwt({ token, user }) {
+      /* 1. Lần đăng nhập đầu */
       if (user) {
         token.accessToken = user.accessToken;
-        token.expiresAt = Math.floor(Date.now() / 1000) + user.expiresIn;
+        // ⬇️ Lưu expiresAt dưới dạng **milliseconds**
+        token.expiresAt = Date.now() + user.expiresIn * 1000;
+        return token; // trả ngay, tránh chạy tiếp
       }
 
-      // @ts-ignore
-      if (Date.now() >= token.expiresAt * 1000) {
-        try {
-          const res = await axios.post(
-            `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/auth/refresh`,
-            null,
-            {
-              headers: {
-                Authorization: `Bearer ${token.accessToken}`,
-                Accept: "application/json",
-              },
-            }
-          );
-
-          token.accessToken = res.data.token;
-          token.expiresAt =
-            Math.floor(Date.now() / 1000) + res.data.expires_in;
-        } catch (err) {
-          console.error("Refresh token failed:", err);
-          token.accessToken = null;
-        }
+      /* 2. Token còn hạn → trả sớm */
+      if (token.expiresAt && Date.now() < token.expiresAt) {
+        return token;
       }
+
+      /* 3. Hết hạn → refresh */
+      console.log("REFRESH WITH TOKEN:", token.accessToken?.slice(0, 20));
+      const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/auth/refresh`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${token.accessToken}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        console.log("REFRESH SUCCESS:", res);
+
+        token.accessToken = res.data.token;
+        token.expiresAt = Date.now() + res.data.expires_in * 1000;
 
       return token;
     },
@@ -84,9 +87,6 @@ export const authOptions = {
     },
   },
 
-  session: {
-    strategy: "jwt",
-  },
 
   pages: {
     signIn: "/login",

@@ -10,26 +10,55 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useTranslations } from "next-intl";
 import { DataTable } from "@/app/[locale]/admin/(main)/users/DataTable";
 import { columns, Users } from "@/app/[locale]/admin/(main)/users/Columns";
-import { Suspense } from 'react'
+import { Suspense } from "react";
 import Loading from "@/app/[locale]/admin/(main)/users/Loading";
+
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  getFilteredRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import UserModal from "@/app/[locale]/admin/(main)/users/UserModal";
+
 interface UserPageProps {
   statusData?: any;
   dataUsers?: any;
 }
 
-export default function UserPage({
-  statusData,
-  dataUsers,
-  isLoading,
-}: UserPageProps) {
+export default function UserPage({ statusData, dataUsers }: UserPageProps) {
   const tUser = useTranslations("User");
   const tButton = useTranslations("Button");
   const tLocale = useTranslations("Locale");
+
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [openModalUser, setOpenModalUser] = useState(false)
+
+  const memoData = useMemo(() => dataUsers, [dataUsers]);
+
+  const table = useReactTable({
+    data: memoData,
+    columns,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      sorting,
+    },
+  });
+
+  const handleOpenModalUser = () => {
+    setOpenModalUser(true)
+  }
 
   return (
     <>
@@ -42,7 +71,7 @@ export default function UserPage({
             {tUser("ManageAndOrganizeTeam")}
           </p>
         </div>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button onClick={handleOpenModalUser} variant="outline" className="flex items-center gap-2">
           <Plus className="w-4 h-4" />
           {tButton("AddUser")}
         </Button>
@@ -57,6 +86,10 @@ export default function UserPage({
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <Input
                   placeholder={`${tLocale("SearchUser")} ...`}
+                  value={(table.getColumn("user")?.getFilterValue() as string) ?? ""}
+                   onChange={(event) =>
+            table.getColumn("user")?.setFilterValue(event.target.value)
+          }
                   className="pl-10"
                 />
               </div>
@@ -73,17 +106,6 @@ export default function UserPage({
                 ))}
               </SelectContent>
             </Select>
-            {/* <Select value={roleFilter} onValueChange={setRoleFilter}>
-                  <SelectTrigger className="w-full sm:w-40">
-                    <SelectValue placeholder="Role" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Roles</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="editor">Editor</SelectItem>
-                    <SelectItem value="viewer">Viewer</SelectItem>
-                  </SelectContent>
-                </Select> */}
           </div>
         </CardContent>
       </Card>
@@ -126,8 +148,12 @@ export default function UserPage({
           </div>
         </CardContent>
       </Card> */}
-      <Suspense fallback={<Loading/>}>
-        <DataTable columns={columns} data={dataUsers} />
+      {/* Modal Add User */}
+      <UserModal openModalUser={openModalUser} onClose={() => setOpenModalUser(false)}/>
+
+      {/* Datatables */}
+      <Suspense fallback={<Loading />}>
+        <DataTable columns={columns} data={dataUsers} table={table} />
       </Suspense>
     </>
   );

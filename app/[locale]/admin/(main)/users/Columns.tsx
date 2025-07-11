@@ -70,6 +70,7 @@ export const columns: ColumnDef<Users>[] = [
   {
     id: "user",
     header: "Users",
+    accessorFn: row => `${row.name} ${row.email}`, 
     cell: ({ row }) => {
       const user = row.original; // lấy dữ liệu từ hàng hiện tại
       return (

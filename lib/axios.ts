@@ -1,78 +1,68 @@
 import axios from "axios";
-import { getSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
-// Đọc locale từ cookie client
-function getLocaleFromCookie(): string {
-  if (typeof document !== "undefined") {
-    const match = document.cookie.match(/(?:^|;\s*)NEXT_LOCALE=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : "vi";
-  }
-  return "vi";
+const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API });
+
+let isRefreshing = false;
+let failedQueue: any[] = [];
+
+function processQueue(error: any, token: string | null = null) {
+  failedQueue.forEach(prom =>
+    error ? prom.reject(error) : prom.resolve(token)
+  );
+  failedQueue = [];
 }
 
-let isLoggingOut = false;
+api.interceptors.request.use(async (config) => {
+  // Lấy accessToken mỗi lần
+  const sess = await fetch("/api/auth/session").then(r => r.json());
+  if (sess?.accessToken) {
+    config.headers.Authorization = `Bearer ${sess.accessToken}`;
+  }
+  return config;
+});
 
-export function createApiInstance(token?: string) {
-  const instance = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+api.interceptors.response.use(
+  res => res,
+  async err => {
+    const original = err.config;
 
-  // ✅ Thêm token và locale vào mỗi request
-  instance.interceptors.request.use(async (config) => {
-    const session = await getSession();
-    const locale = getLocaleFromCookie();
+    // Nếu lỗi 401 & chưa retry & không phải chính /auth/refresh
+    if (
+      err.response?.status === 401 &&
+      !original._retry &&
+      !original.url?.includes("/auth/refresh")
+    ) {
+      original._retry = true;
 
-    if (session?.accessToken) {
-      config.headers.Authorization = `Bearer ${session.accessToken}`;
-    }
-
-    config.headers["X-Locale"] = locale;
-
-    return config;
-  });
-
-  // ✅ Nếu token sai → gọi logout Laravel + signOut
-  instance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
-
-      if (
-        error.response?.status === 401 &&
-        !originalRequest._retry &&
-        !isLoggingOut
-      ) {
-        originalRequest._retry = true;
-
-        try {
-          const session = await getSession();
-          const token = session?.accessToken;
-
-          if (token) {
-            await axios.post(
-              `${process.env.NEXT_PUBLIC_URL_API_BACKEND}/auth/logout`,
-              null,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  Accept: "application/json",
-                },
-              }
-            );
-          }
-        } catch (logoutError) {
-          console.warn("⚠️ Logout Laravel failed:", logoutError);
-        }
-
-        isLoggingOut = true;
-        await signOut({ redirect: false });
-        return Promise.reject(error);
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            original.headers.Authorization = `Bearer ${token}`;
+            return axios(original);
+          })
+          .catch(e => Promise.reject(e));
       }
 
-      return Promise.reject(error);
+      isRefreshing = true;
+      try {
+        const { data } = await axios.post("/api/auth/refresh");
+        processQueue(null, data.accessToken);
+        original.headers.Authorization = `Bearer ${data.accessToken}`;
+        return axios(original);
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
+        signOut({ callbackUrl: "/login" });
+        return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
+      }
     }
-  );
 
-  return instance;
-}
+    return Promise.reject(err);
+  }
+);
+
+export default api;
