@@ -4,7 +4,7 @@ import { Users } from "lucide-react";
 import {
   ColumnDef,
   flexRender,
-  getCoreRowModel,
+  getCoreRowModel, getSortedRowModel, SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
+import {useMemo, useState} from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -27,10 +28,20 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const [sorting, setSorting] = useState<SortingState>([])
+
+  /* ① Ổn định reference của data */
+  const memoData = useMemo(() => data, [data]);
+
   const table = useReactTable({
-    data,
+    data: memoData,
     columns,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
   });
 
   return (

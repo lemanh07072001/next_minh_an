@@ -52,7 +52,17 @@ export const columns: ColumnDef<Users>[] = [
   },
   {
     accessorKey: "id",
-    header: "ID",
+    header: ({ column }) => {
+      return (
+          <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            ID
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+      )
+    },
     meta: {
       className: "w-9", // 👈 bạn sẽ đọc meta này khi render
     },
