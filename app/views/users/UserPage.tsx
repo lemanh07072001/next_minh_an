@@ -1,48 +1,42 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Plus, Search, Mail, Lock, Trash2 } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { useEffect, useState, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import {Plus } from "lucide-react";
+
+import React, {useState, useMemo, useEffect} from "react";
+
 import { useTranslations } from "next-intl";
 import { DataTable } from "@/app/[locale]/admin/(main)/users/DataTable";
-import { columns, Users } from "@/app/[locale]/admin/(main)/users/Columns";
-import { Suspense } from "react";
-import Loading from "@/app/[locale]/admin/(main)/users/Loading";
-
+import { columns } from "@/app/[locale]/admin/(main)/users/Columns";
 import {
-  ColumnDef,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   getFilteredRowModel,
-  useReactTable,
+  useReactTable, getPaginationRowModel,
 } from "@tanstack/react-table";
 import UserModal from "@/app/[locale]/admin/(main)/users/UserModal";
+import {PaginationControls} from "@/app/[locale]/admin/(main)/components/PaginationComponent";
+
+
 
 interface UserPageProps {
-  statusData?: any;
   dataUsers?: any;
 }
 
-export default function UserPage({ statusData, dataUsers }: UserPageProps) {
+export default function UserPage({  dataUsers }: UserPageProps) {
   const tUser = useTranslations("User");
   const tButton = useTranslations("Button");
-  const tLocale = useTranslations("Locale");
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openModalUser, setOpenModalUser] = useState(false)
-
-  const memoData = useMemo(() => dataUsers, [dataUsers]);
+  const [isLoading, setLoading] = useState(false);
+  const [users, setUsers] = useState(dataUsers);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10, // mặc định 10 dòng/trang
+  });
+  const memoData = useMemo(() => users, [users]);
 
   const table = useReactTable({
     data: memoData,
@@ -51,10 +45,15 @@ export default function UserPage({ statusData, dataUsers }: UserPageProps) {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPagination,
     state: {
       sorting,
+      pagination
     },
   });
+
+
 
   const handleOpenModalUser = () => {
     setOpenModalUser(true)
@@ -77,84 +76,24 @@ export default function UserPage({ statusData, dataUsers }: UserPageProps) {
         </Button>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Input
-                  placeholder={`${tLocale("SearchUser")} ...`}
-                  value={(table.getColumn("user")?.getFilterValue() as string) ?? ""}
-                   onChange={(event) =>
-            table.getColumn("user")?.setFilterValue(event.target.value)
-          }
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <Select>
-              <SelectTrigger className="w-full sm:w-40">
-                <SelectValue placeholder={`${tLocale("Status")}`} />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(statusData).map(([key, label]) => (
-                  <SelectItem key={key} value={key}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
 
-      {/* Bulk Actions Bar */}
-      {/* <Card>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-blue-900 dark:text-gray-50">
-                Đã chọn người dùng
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 bg-transparent"
-              >
-                <Mail className="w-4 h-4" />
-                Gửi Email
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2 bg-transparent"
-              >
-                <Lock className="w-4 h-4" />
-                Khóa Tài Khoản
-              </Button>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Trash2 className="w-4 h-4" />
-                Xóa Tất Cả
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card> */}
       {/* Modal Add User */}
       <UserModal openModalUser={openModalUser} onClose={() => setOpenModalUser(false)}/>
 
       {/* Datatables */}
-      <Suspense fallback={<Loading />}>
-        <DataTable columns={columns} data={dataUsers} table={table} />
-      </Suspense>
+      <DataTable columns={columns} data={users} table={table} isLoading={isLoading} />
+
+      {/* Pagination */}
+      <PaginationControls
+          currentPage={table?.getState().pagination.pageIndex}
+          totalPages={table?.getPageCount()}
+          setPage={table?.setPageIndex}
+          canPreviousPage={table?.getCanPreviousPage()}
+          canNextPage={table?.getCanNextPage()}
+          previousPage={table?.previousPage}
+          nextPage={table?.nextPage}
+      />
+
     </>
   );
 }

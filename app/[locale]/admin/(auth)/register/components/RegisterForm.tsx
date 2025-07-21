@@ -32,8 +32,9 @@ import { useState } from "react";
 import {
     createRegisterFormSchema,
     RegisterFormData
-} from "@/app/[locale]/admin/(auth)/register/validator/registerSchema";
-import {createApiInstance} from "@/lib/axios";
+} from "@/app/[locale]/admin/(auth)/register/validators/registerSchema";
+import api from "@/lib/axios";
+
 
 export function RegisterForm({
                               className,
@@ -63,7 +64,7 @@ export function RegisterForm({
     const onSubmit = async (data: RegisterFormData) => {
         try {
             setLoading(true);
-            const api = createApiInstance();
+
 
             const response = await api.post("/auth/register",{
                 username : data.name,

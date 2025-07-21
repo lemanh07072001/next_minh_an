@@ -31,6 +31,7 @@ async function fetchUserData(token?: string, locale: string = "vi") {
     }
 
     const data = await response.json();
+    console.log(data)
     return data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -60,6 +61,8 @@ async function fetchStatusUserData(token?: string, locale: string = "vi") {
     }
 
     const data = await response.json();
+
+
     return data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -69,19 +72,22 @@ async function fetchStatusUserData(token?: string, locale: string = "vi") {
 
 export default async function Users({
   params,
+                                      searchParams
 }: {
   params: { locale: string };
+  searchParams: { page?: string };
 }) {
   const session = await getServerSession(authOptions);
-  const token = session?.accessToken;
+  const token = session?.accessToken ;
 
   const {locale} = await params;
-
+  const currentPage = parseInt(searchParams.page || "1", 10);
   // if (!token) {
   //   redirect("/403"); // Hoặc `/en/403` nếu dùng đa ngôn ngữ
   // }
 
   const userData = await fetchUserData(token, locale);
+
   const statusData = await fetchStatusUserData(token, locale);
 
   // (Tùy bạn) Nếu API không trả về user:
@@ -89,5 +95,5 @@ export default async function Users({
   //   redirect("/403"); // Hoặc hiển thị thông báo lỗi tùy ý
   // }
 
-  return <UserPage statusData={statusData} dataUsers={userData?.data || []} />;
+  return <UserPage dataUsers={userData?.data} />;
 }

@@ -1,9 +1,11 @@
-import NextAuth from "next-auth";
+import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
-
+import jwt from "jsonwebtoken"
+import {JWTDecodeParams} from "next-auth/jwt";
 // 👇 Tách riêng config ra để tái sử dụng
-export const authOptions = {
+// @ts-ignore
+export const authOptions : NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -46,7 +48,7 @@ export const authOptions = {
   ],
 
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any}) {
       /* 1. Lần đăng nhập đầu */
       if (user) {
         token.accessToken = user.accessToken;
@@ -81,18 +83,23 @@ export const authOptions = {
       return token;
     },
 
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       session.accessToken = token.accessToken;
       return session;
     },
   },
 
-
-  pages: {
-    signIn: "/login",
+  session: {
+    strategy: "jwt",
   },
 
   secret: process.env.NEXTAUTH_SECRET,
+
+  pages: {
+    signIn: "/admin/login",
+  },
+
+
 };
 
 // ✅ Export API route handler

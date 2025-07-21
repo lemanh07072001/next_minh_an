@@ -1,0 +1,22 @@
+{
+  "welcome": {
+    "template" : "welcome",
+    "subject": "Chào mừng đến với {nameShop}",
+    "body": "Xin chào {{name}},\n\nChúng tôi rất vui mừng khi bạn đã đăng ký tài khoản tại hệ thống.\nHãy bắt đầu trải nghiệm ngay hôm nay!\n\nTrân trọng,\nĐội ngũ hỗ trợ"
+  },
+  "notification": {
+    "template" : "notification",
+    "subject": "Bạn có một thông báo mới",
+    "body": "Xin chào {{name}},\n\nBạn có một thông báo mới trong hệ thống.\nVui lòng đăng nhập để xem chi tiết.\n\nTrân trọng,\nĐội ngũ hỗ trợ"
+  },
+  "confirm": {
+    "template" : "confirm",
+    "subject": "Xác nhận tài khoản của bạn",
+    "body": "Xin chào {{name}},\n\nVui lòng nhấn vào liên kết dưới đây để xác nhận tài khoản của bạn:\n{{confirm_link}}\n\nTrân trọng,\nĐội ngũ hỗ trợ"
+  },
+  "force_password_change": {
+    "template" : "force_password_change",
+    "subject": "Yêu cầu đổi mật khẩu khi đăng nhập lần đầu",
+    "body": "Xin chào {{name}},\n\nBạn vừa đăng nhập vào hệ thống lần đầu tiên.\nVì lý do bảo mật, bạn bắt buộc phải thay đổi mật khẩu trước khi tiếp tục sử dụng.\n\nVui lòng nhấn vào liên kết sau để đặt lại mật khẩu mới:\n{{change_password_link}}\n\nNếu bạn không thực hiện hành động này, vui lòng liên hệ quản trị viên.\n\nTrân trọng,\nĐội ngũ hỗ trợ"
+  }
+}

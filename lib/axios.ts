@@ -1,7 +1,7 @@
 import axios from "axios";
 import { signOut } from "next-auth/react";
 
-const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_API });
+const api = axios.create({ baseURL: process.env.NEXT_PUBLIC_URL_API_BACKEND });
 
 let isRefreshing = false;
 let failedQueue: any[] = [];

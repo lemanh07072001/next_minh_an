@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {STATUS_USER} from "@/app/constants/status";
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Users = {
@@ -94,6 +95,24 @@ export const columns: ColumnDef<Users>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "phone",
+    header: "Phone",
+    meta: {
+      className: "w-38", // 👈 bạn sẽ đọc meta này khi render
+    },
+    cell: ({ row }) => {
+      const data = row.original.profile; // lấy dữ liệu từ hàng hiện tại
+
+      return (
+        <div>
+          <div className="font-medium">{data?.phone}</div>
+          <div className="text-sm text-gray-500">{data?.address}</div>
+        </div>
+      )
+
+    },
+  },
+  {
     accessorKey: "role",
     header: "Role",
     meta: {
@@ -105,8 +124,10 @@ export const columns: ColumnDef<Users>[] = [
     header: "Status",
     cell: ({ row }) => {
       const statusData = row.original; // lấy dữ liệu từ hàng hiện tại
+      const dataStatus = STATUS_USER;
+      const statusItem = dataStatus.find((item) => item.value === statusData.status);
 
-      return <Badge>{statusData.status.value}</Badge>;
+      return <Badge>{statusItem?.label ?? "Không xác định"}</Badge>;
     },
     meta: {
       className: "w-48", // 👈 bạn sẽ đọc meta này khi render

@@ -15,7 +15,7 @@ const PUBLIC_PATHS = [
 ];
 
 const PROTECTED_PATHS = [
-  /^\/admin(\/(?!login|register).*)?$/,  // /admin/* nhưng loại /login và /register
+  /^\/admin(\/(?!login|register).*)?$/,
   /^\/user(\/.*)?$/,
   /^\/product(\/.*)?$/,
   /^\/image(\/.*)?$/,
@@ -24,36 +24,46 @@ const PROTECTED_PATHS = [
 
 const intlMiddleware = createMiddleware(routing);
 
-export async function middleware(req) {
+export async function middleware(req: any) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  // 🌐 Xử lý locale trong URL nếu có
+  // 🌐 Xác định locale prefix (vi, en, ...)
   const localePrefix = routing.locales.find((locale) =>
-    pathname.startsWith(`/${locale}`)
+      pathname.startsWith(`/${locale}`)
   );
   const strippedPathname = localePrefix
-    ? pathname.replace(`/${localePrefix}`, '')
-    : pathname;
+      ? pathname.replace(`/${localePrefix}`, '')
+      : pathname;
 
-  // ✅ Đã login nhưng cố vào trang login
+  const basePath = localePrefix ? `/${localePrefix}` : '';
+
+  // ✅ Nếu đã đăng nhập mà vào trang login → chuyển về dashboard
   if (token && strippedPathname === PATHS.LOGIN) {
-    return NextResponse.redirect(new URL(PATHS.DASHBOARD, req.url));
+    return NextResponse.redirect(new URL(`${basePath}${PATHS.DASHBOARD}`, req.url));
   }
 
-  // ✅ Chưa login mà vào route bảo vệ
+  // ✅ Chưa đăng nhập mà vào route cần bảo vệ
   const isProtected =
-    PROTECTED_PATHS.some((pattern) => pattern.test(strippedPathname)) &&
-    !PUBLIC_PATHS.includes(strippedPathname);
+      PROTECTED_PATHS.some((pattern) => pattern.test(strippedPathname)) &&
+      !PUBLIC_PATHS.includes(strippedPathname);
 
   if (!token && isProtected) {
-    return NextResponse.redirect(new URL(PATHS.LOGIN, req.url));
+    const loginUrl = new URL(`${basePath}${PATHS.LOGIN}`, req.url);
+
+    // Tránh callbackUrl bị vòng lặp nếu đang là login
+    if (strippedPathname !== PATHS.LOGIN) {
+      loginUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
+    }
+
+    return NextResponse.redirect(loginUrl);
   }
 
-  // ✅ Mọi trường hợp khác xử lý i18n
+  // ✅ Mọi trường hợp khác → xử lý i18n
   return intlMiddleware(req);
 }
 
+// ✅ Matcher để middleware chỉ áp dụng với route frontend
 export const config = {
   matcher: [
     '/((?!api|_next|_vercel|.*\\..*).*)',
