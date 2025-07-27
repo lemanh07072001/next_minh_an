@@ -7,7 +7,7 @@ import React, {useState, useMemo, useEffect} from "react";
 
 import { useTranslations } from "next-intl";
 import { DataTable } from "@/app/[locale]/admin/(main)/users/DataTable";
-import { columns } from "@/app/[locale]/admin/(main)/users/Columns";
+import { getUserColumns } from "@/app/[locale]/admin/(main)/users/Columns";
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -32,11 +32,29 @@ export default function UserPage({  dataUsers }: UserPageProps) {
   const [openModalUser, setOpenModalUser] = useState(false)
   const [isLoading, setLoading] = useState(false);
   const [users, setUsers] = useState(dataUsers);
+  const [user, setUser] = useState();
+  const [isMode, setMode] = useState('create');
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10, // mặc định 10 dòng/trang
   });
   const memoData = useMemo(() => users, [users]);
+
+
+
+  const handleOpenEditModal = (user: any) => {
+    setMode("edit");        // Đặt chế độ modal là 'edit' (chỉnh sửa)
+    setUser(user);                // Gán ID user được chọn để load dữ liệu
+    setOpenModalUser(true); // Hiển thị modal
+  }
+
+  const handleOpenModalUser = () => {
+    setMode('create');        // Đặt chế độ modal là 'create' (thêm mới)
+    setOpenModalUser(true)    // Hiển thị modal
+  }
+
+  // Lấy danh sách các cột của bảng user
+  const columns = getUserColumns({ onEdit: handleOpenEditModal });
 
   const table = useReactTable({
     data: memoData,
@@ -52,12 +70,6 @@ export default function UserPage({  dataUsers }: UserPageProps) {
       pagination
     },
   });
-
-
-
-  const handleOpenModalUser = () => {
-    setOpenModalUser(true)
-  }
 
   return (
     <>
@@ -78,10 +90,18 @@ export default function UserPage({  dataUsers }: UserPageProps) {
 
 
       {/* Modal Add User */}
-      <UserModal openModalUser={openModalUser} onClose={() => setOpenModalUser(false)}/>
+      <UserModal
+        openModalUser={openModalUser}
+        user={user}
+        isMode={isMode}
+        onClose={() => setOpenModalUser(false)} />
 
       {/* Datatables */}
-      <DataTable columns={columns} data={users} table={table} isLoading={isLoading} />
+      <DataTable
+        columns={columns}
+        data={users}
+        table={table}
+        isLoading={isLoading} />
 
       {/* Pagination */}
       <PaginationControls

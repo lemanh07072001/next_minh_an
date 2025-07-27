@@ -88,12 +88,6 @@ export default async function Users({
 
   const userData = await fetchUserData(token, locale);
 
-  const statusData = await fetchStatusUserData(token, locale);
-
-  // (Tùy bạn) Nếu API không trả về user:
-  // if (!userData) {
-  //   redirect("/403"); // Hoặc hiển thị thông báo lỗi tùy ý
-  // }
 
   return <UserPage dataUsers={userData?.data} />;
 }

@@ -25,7 +25,11 @@ export type Users = {
   email: string;
 };
 
-export const columns: ColumnDef<Users>[] = [
+export const getUserColumns = (
+  {
+    onEdit
+  } : {onEdit: any}
+): ColumnDef<Users>[] => [
   {
     id: "checkAll",
     header: ({ table }) => (
@@ -48,32 +52,30 @@ export const columns: ColumnDef<Users>[] = [
     enableSorting: false,
     enableHiding: false,
     meta: {
-      className: "w-9", // 👈 bạn sẽ đọc meta này khi render
+      className: "w-9",
     },
   },
   {
     accessorKey: "id",
-    header: ({ column }) => {
-      return (
-          <Button
-              variant="ghost"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            ID
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-      )
-    },
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+      >
+        ID
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
     meta: {
-      className: "w-9", // 👈 bạn sẽ đọc meta này khi render
+      className: "w-9",
     },
   },
   {
     id: "user",
     header: "Users",
-    accessorFn: row => `${row.name} ${row.email}`, 
+    accessorFn: row => `${row.name} ${row.email}`,
     cell: ({ row }) => {
-      const user = row.original; // lấy dữ liệu từ hàng hiện tại
+      const user = row.original;
       return (
         <div className="flex items-center gap-3">
           <Avatar>
@@ -97,70 +99,56 @@ export const columns: ColumnDef<Users>[] = [
   {
     accessorKey: "phone",
     header: "Phone",
-    meta: {
-      className: "w-38", // 👈 bạn sẽ đọc meta này khi render
-    },
     cell: ({ row }) => {
-      const data = row.original.profile; // lấy dữ liệu từ hàng hiện tại
-
+      const data = row.original.profile;
       return (
         <div>
           <div className="font-medium">{data?.phone}</div>
           <div className="text-sm text-gray-500">{data?.address}</div>
         </div>
-      )
-
+      );
     },
   },
   {
     accessorKey: "role",
     header: "Role",
-    meta: {
-      className: "w-30", // 👈 bạn sẽ đọc meta này khi render
-    },
   },
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const statusData = row.original; // lấy dữ liệu từ hàng hiện tại
-      const dataStatus = STATUS_USER;
-      const statusItem = dataStatus.find((item) => item.value === statusData.status);
-
+      const statusData = row.original;
+      const statusItem = STATUS_USER.find((item) => item.value === statusData.status);
       return <Badge>{statusItem?.label ?? "Không xác định"}</Badge>;
-    },
-    meta: {
-      className: "w-48", // 👈 bạn sẽ đọc meta này khi render
     },
   },
   {
     id: "action",
     header: "Action",
-    cell: ({ row }) => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreHorizontal />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem
-            onClick={() => navigator.clipboard.writeText(payment.id)}
-          >
-            Copy payment ID
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>View customer</DropdownMenuItem>
-          <DropdownMenuItem>View payment details</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => onEdit(row.original)}
+            >
+              Edit User
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View customer</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
-    meta: {
-      className: "w-20", // 👈 bạn sẽ đọc meta này khi render
-    },
   },
 ];
+

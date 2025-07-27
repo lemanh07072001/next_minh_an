@@ -22,7 +22,7 @@ import {User, Mail, Loader, EyeOff, Eye} from "lucide-react";
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useForm, useWatch} from "react-hook-form";
 
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -44,15 +44,22 @@ import {toast} from "sonner";
 
 interface UserModalProps {
   openModalUser: boolean;
-   onClose: () => void;
+  onClose: () => void;
+  user: any;
+  isMode: "edit" | "create";
 }
 
 
-export default function UserModal({ openModalUser, onClose }: UserModalProps) {
+export default function UserModal({ openModalUser, onClose, user, isMode }: UserModalProps) {
   const [isLoading , setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dataStatus = STATUS_USER;
   const defaultStatus = dataStatus[0];
+
+  const [titleModal, setTitleModal] = useState({
+    title: "Thêm tài khoản mới",
+    description: "Tạo tài khoản mới cho thành viên trong nhóm. Điền đầy đủ thông tin bên dưới.",
+  });
 
   const formSchema = createUserFormSchema();
   const form = useForm<CreateUserFormData>({
@@ -68,20 +75,41 @@ export default function UserModal({ openModalUser, onClose }: UserModalProps) {
     },
   });
 
-    const handelOpenModalForgotPassword = (open: boolean) => {
-        setShowPassword(open);
-    };
+  const handelOpenModalForgotPassword = (open: boolean) => {
+    setShowPassword(open);
+  };
 
   const passwordChange = useWatch({
     control: form.control,
     name: "passwordChange",
   });
 
+  // Hiện dữ liệu khi mở form edit
+  useEffect(() => {
+    if (isMode === "edit" && user) {
+      setTitleModal({
+        title: "Cập nhật tài khoản",
+        description: "Cập nhật tài khoản cho thành viên trong nhóm. Điền đầy đủ thông tin bên dưới.",
+      });
+
+      form.reset({
+        name: user?.name,
+        email: user?.email,
+        phone: user?.profile?.phone,
+        status: String(user?.status),
+        password: "",
+        passwordChange: false,
+
+      });
+    }
+  }, [isMode, user]);
+
   const onSubmit = async (data: CreateUserFormData) =>{
     try {
       const welcomeEmail = data?.welcomeEmail;
       let emailTemplate;
 
+      // Template gửi email
       if (welcomeEmail) {
         emailTemplate = renderTemplate("welcome", { name: data.name });
       }
@@ -91,7 +119,14 @@ export default function UserModal({ openModalUser, onClose }: UserModalProps) {
         ...(emailTemplate && {email_template: emailTemplate}),
       };
 
-      const res = await api.post("/user/create-user", mergedData);
+      let res = null;
+
+      // Nếu isMode là create thì sẽ call api thêm dữ liệu ngược lại thì cập nhật
+      if(isMode == "create"){
+        res = await api.post("/user/create-user", mergedData);
+      }else {
+        res = await api.post(`/user/edit-user/${user.id}`, mergedData);
+      }
 
       if (res.status === 200) {
         // ✅ Reset form và đóng modal
@@ -101,7 +136,11 @@ export default function UserModal({ openModalUser, onClose }: UserModalProps) {
         toast.success("Thành công!", {
           description: res.data.message,
         });
+
+        // 🔄 Reload lại bảng
+        refetch();
       }
+
     }catch (error) {
       console.error(error);
       // Hiện thông báo thất bại
@@ -118,10 +157,10 @@ export default function UserModal({ openModalUser, onClose }: UserModalProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <User className="w-5 h-5" />
-              Thêm tài khoản mới
+              {titleModal.title}
             </DialogTitle>
             <DialogDescription>
-              Tạo tài khoản mới cho thành viên trong nhóm. Điền đầy đủ thông tin bên dưới.
+              {titleModal.description}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>

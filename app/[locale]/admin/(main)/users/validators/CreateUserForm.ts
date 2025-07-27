@@ -23,12 +23,19 @@ export const createUserFormSchema = () => {
             .string(),
         password: z
             .string()
-            .min(8, {
-              message: tSchema("PasswordMin8Length") || "Password must be at least 8 characters",
-            })
-            .max(100, {
-              message: tSchema("PasswordMax100Length") || "Password cannot exceed 100 characters",
-            }),
+            .optional()
+            .refine(
+              (val) => !val || val.length >= 8,
+              {
+                message: tSchema("PasswordMin8Length") || "Password must be at least 8 characters",
+              }
+            )
+            .refine(
+              (val) => !val || val.length <= 100,
+              {
+                message: tSchema("PasswordMax100Length") || "Password cannot exceed 100 characters",
+              }
+            ),
         welcomeEmail: z
             .boolean()
             .optional(),
