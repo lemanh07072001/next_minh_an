@@ -31,7 +31,6 @@ async function fetchUserData(token?: string, locale: string = "vi") {
     }
 
     const data = await response.json();
-    console.log(data)
     return data;
   } catch (error) {
     console.error("Error fetching user data:", error);
@@ -81,10 +80,6 @@ export default async function Users({
   const token = session?.accessToken ;
 
   const {locale} = await params;
-  const currentPage = parseInt(searchParams.page || "1", 10);
-  // if (!token) {
-  //   redirect("/403"); // Hoặc `/en/403` nếu dùng đa ngôn ngữ
-  // }
 
   const userData = await fetchUserData(token, locale);
 

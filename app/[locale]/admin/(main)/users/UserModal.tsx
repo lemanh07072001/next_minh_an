@@ -46,11 +46,18 @@ interface UserModalProps {
   openModalUser: boolean;
   onClose: () => void;
   user: any;
+  reloadUser: () => void;
   isMode: "edit" | "create";
 }
 
 
-export default function UserModal({ openModalUser, onClose, user, isMode }: UserModalProps) {
+export default function UserModal({ 
+  openModalUser, 
+  onClose, 
+  user, 
+  isMode, 
+  reloadUser 
+}: UserModalProps) {
   const [isLoading , setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const dataStatus = STATUS_USER;
@@ -124,6 +131,7 @@ export default function UserModal({ openModalUser, onClose, user, isMode }: User
       // Nếu isMode là create thì sẽ call api thêm dữ liệu ngược lại thì cập nhật
       if(isMode == "create"){
         res = await api.post("/user/create-user", mergedData);
+        
       }else {
         res = await api.post(`/user/edit-user/${user.id}`, mergedData);
       }
@@ -138,7 +146,7 @@ export default function UserModal({ openModalUser, onClose, user, isMode }: User
         });
 
         // 🔄 Reload lại bảng
-        refetch();
+        await reloadUser()
       }
 
     }catch (error) {

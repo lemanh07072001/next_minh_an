@@ -17,6 +17,7 @@ import {
 } from "@tanstack/react-table";
 import UserModal from "@/app/[locale]/admin/(main)/users/UserModal";
 import {PaginationControls} from "@/app/[locale]/admin/(main)/components/PaginationComponent";
+import api from "@/lib/axios";
 
 
 
@@ -40,6 +41,10 @@ export default function UserPage({  dataUsers }: UserPageProps) {
   });
   const memoData = useMemo(() => users, [users]);
 
+  const loadUsers = async () => {
+    const res = await api.get('/user/get-users');
+    setUsers(res.data.data)
+  };
 
 
   const handleOpenEditModal = (user: any) => {
@@ -94,6 +99,7 @@ export default function UserPage({  dataUsers }: UserPageProps) {
         openModalUser={openModalUser}
         user={user}
         isMode={isMode}
+        reloadUser={loadUsers}
         onClose={() => setOpenModalUser(false)} />
 
       {/* Datatables */}
