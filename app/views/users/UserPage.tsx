@@ -18,6 +18,9 @@ import {
 import UserModal from "@/app/[locale]/admin/(main)/users/UserModal";
 import {PaginationControls} from "@/app/[locale]/admin/(main)/components/PaginationComponent";
 import api from "@/lib/axios";
+import {ConfirmDelete} from "@/app/[locale]/admin/(main)/users/ConfirmDelete";
+import {toast} from "sonner";
+import {SendEmail} from "@/app/[locale]/admin/(main)/users/SendEmail";
 
 
 
@@ -31,9 +34,12 @@ export default function UserPage({  dataUsers }: UserPageProps) {
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openModalUser, setOpenModalUser] = useState(false)
+  const [openConfirmModalUser, setOpenConfirmModalUser] = useState(false)
+  const [openModalSendEmailUser, setOpenModalSendEmailUser] = useState(false)
   const [isLoading, setLoading] = useState(false);
   const [users, setUsers] = useState(dataUsers);
-  const [user, setUser] = useState();
+  const [userEdit, setUserEdit] = useState();
+  const [userDelete, setUserDelete] = useState();
   const [isMode, setMode] = useState('create');
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -49,8 +55,45 @@ export default function UserPage({  dataUsers }: UserPageProps) {
 
   const handleOpenEditModal = (user: any) => {
     setMode("edit");        // Đặt chế độ modal là 'edit' (chỉnh sửa)
-    setUser(user);                // Gán ID user được chọn để load dữ liệu
+    setUserEdit(user);                // Gán ID user được chọn để load dữ liệu
     setOpenModalUser(true); // Hiển thị modal
+  }
+
+  const handleOpenConfirmDelete = (user: any) => {
+    setUserDelete(user) // Gán user vào
+    setOpenConfirmModalUser(true) // Hiển thị modal
+  }
+
+  const handleSendEmailModal = (user: any) => {
+    setOpenModalSendEmailUser(true); // Hiển thị modal
+  }
+
+  const handleSumitDelete = async (user: any)=> {
+    try {
+      const id = userDelete?.id;
+
+      if (!id) return
+
+      const res = await api.delete(`/user/delete/${id}`)
+
+      if (res.status === 200) {
+        // ✅ đóng modal
+        setOpenConfirmModalUser(false)           // Đóng modal
+        // Hiện thông báo thành công
+        toast.success("Thành công!", {
+          description: res.data.message,
+        });
+
+        // 🔄 Reload lại bảng
+        await loadUsers()
+      }
+    }catch(error) {
+      console.error(error);
+      // Hiện thông báo thất bại
+      toast.error("Thất bại", {
+        description: "Lỗi hệ thống vui lòng thử lại sau.",
+      });
+    }
   }
 
   const handleOpenModalUser = () => {
@@ -59,7 +102,7 @@ export default function UserPage({  dataUsers }: UserPageProps) {
   }
 
   // Lấy danh sách các cột của bảng user
-  const columns = getUserColumns({ onEdit: handleOpenEditModal });
+  const columns = getUserColumns({ onEdit: handleOpenEditModal, onDelete: handleOpenConfirmDelete, onSendEmail: handleSendEmailModal });
 
   const table = useReactTable({
     data: memoData,
@@ -97,7 +140,7 @@ export default function UserPage({  dataUsers }: UserPageProps) {
       {/* Modal Add User */}
       <UserModal
         openModalUser={openModalUser}
-        user={user}
+        user={userEdit}
         isMode={isMode}
         reloadUser={loadUsers}
         onClose={() => setOpenModalUser(false)} />
@@ -120,6 +163,18 @@ export default function UserPage({  dataUsers }: UserPageProps) {
           nextPage={table?.nextPage}
       />
 
+      {/* Confirm Delete */}
+      <ConfirmDelete
+        openModal={openConfirmModalUser}
+        onConfirm={handleSumitDelete}
+        user={userDelete}
+        onClose={() => setOpenConfirmModalUser(false)}/>
+
+      {/* Send Email */}
+      <SendEmail
+        openModal={openModalSendEmailUser}
+        user={userDelete}
+        onClose={() => setOpenModalSendEmailUser(false)}/>
     </>
   );
 }

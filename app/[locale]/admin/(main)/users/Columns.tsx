@@ -14,8 +14,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {
+  ArrowUpDown,
+  ChevronDown,
+  MoreHorizontal,
+  UserRoundPen,
+  Trash2,
+  Mail
+} from "lucide-react";
 import {STATUS_USER} from "@/app/constants/status";
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Users = {
@@ -27,8 +35,10 @@ export type Users = {
 
 export const getUserColumns = (
   {
-    onEdit
-  } : {onEdit: any}
+    onEdit,
+    onDelete,
+    onSendEmail
+  } : {onEdit: any, onDelete: any, onSendEmail: any}
 ): ColumnDef<Users>[] => [
   {
     id: "checkAll",
@@ -139,7 +149,21 @@ export const getUserColumns = (
             <DropdownMenuItem
               onClick={() => onEdit(row.original)}
             >
-              Edit User
+              <UserRoundPen/>
+                Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => onDelete(row.original)}
+            >
+              <Trash2/>
+              Delete
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onClick={() => onSendEmail(row.original)}
+            >
+              <Mail />
+              Mail
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>View customer</DropdownMenuItem>
